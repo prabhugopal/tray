@@ -1,10 +1,10 @@
 # Cross-platform Linux/Windows/MacOS Tray
 
-<img src="screenshot_macosx.png">
+![MacOS screenshot](./screenshot_macosx.png)
 
-<img src="screenshot_windows.png">
+![Windows screenshot](./screenshot_windows.png)
 
-<img src="screenshot_linux.png">
+![Linux screenshot](./screenshot_linux.png)
 
 Cross-platform, super tiny C99 implementation of a system tray icon with a popup menu.
 
@@ -16,7 +16,11 @@ Works well on:
 
 The code is C++ friendly and will compile fine in C++98 and up.
 
-This fork is intended to bring together the [original work of Serge Zaitsev](https://github.com/zserge/tray) and the most interesting forks and PRs of respectable contributors:
+This fork is intended to make the functionality available as a library, for use from other languages.
+
+It is in turn based on a [fork by dmikushin](https://github.com/dmikushin/tray) that brings together the 
+[original work of Serge Zaitsev](https://github.com/zserge/tray) and the most interesting forks and PRs of 
+respectable contributors:
 
 * [Only process messages coming from the tray window on Windows](https://github.com/zserge/tray/pull/18)
 * [Become C++-friendly](https://github.com/zserge/tray/pull/16)
@@ -60,7 +64,9 @@ callback with some optional context pointer.
 
 ```c
 struct tray {
-  char *icon;
+  const char *icon_name;
+  char *tooltip;
+  void (*cb)(struct tray *); // called on left click, leave null to just open menu
   struct tray_menu *menu;
 };
 
@@ -68,10 +74,7 @@ struct tray_menu {
   char *text;
   int disabled;
   int checked;
-
   void (*cb)(struct tray_menu *);
-  void *context;
-
   struct tray_menu *submenu;
 };
 ```
@@ -89,5 +92,5 @@ array must have text field set to NULL.
 ## License
 
 This software is distributed under [MIT license](http://www.opensource.org/licenses/mit-license.php),
- so feel free to integrate it in your commercial products.
+so feel free to integrate it in your commercial products.
 

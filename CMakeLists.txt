@@ -4,7 +4,6 @@ project(tray C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-
 # Generate 'compile_commands.json' for clang_complete
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -34,7 +33,8 @@ else()
 	endif()
 endif()
 
-add_library(tray STATIC ${SRCS})
+#add_library(tray STATIC ${SRCS})
+add_library(tray SHARED ${SRCS})
 set_property(TARGET tray PROPERTY C_STANDARD 99)
 if(WIN32)
 	target_compile_definitions(tray PRIVATE TRAY_WINAPI=1 WIN32_LEAN_AND_MEAN NOMINMAX)
@@ -60,10 +60,11 @@ add_library(tray::tray ALIAS tray)
 add_executable(tray_example ${CMAKE_CURRENT_SOURCE_DIR}/example.c)
 target_link_libraries(tray_example tray::tray)
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/icon.ico ${CMAKE_BINARY_DIR}/icon.ico COPYONLY)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/icon.png ${CMAKE_BINARY_DIR}/icon.png COPYONLY)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/icon2.png ${CMAKE_BINARY_DIR}/icon2.png COPYONLY)
 
-INSTALL(TARGETS tray tray DESTINATION lib)
+#INSTALL(TARGETS tray tray DESTINATION lib)
+INSTALL(TARGETS tray DESTINATION lib)
 
 IF(NOT WIN32)
 	INSTALL(FILES tray.h DESTINATION include)
