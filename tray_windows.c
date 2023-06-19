@@ -11,6 +11,7 @@ static NOTIFYICONDATA nid;
 static HWND hwnd;
 static HMENU hmenu = NULL;
 static UINT wm_taskbarcreated;
+static BOOL exit_was_called = FALSE;
 
 static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
                                        LPARAM lparam) {
@@ -27,7 +28,7 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
       GetCursorPos(&p);
       SetForegroundWindow(hwnd);
       WORD cmd = TrackPopupMenu(hmenu, TPM_LEFTALIGN | TPM_RIGHTBUTTON |
-                                           TPM_RETURNCMD | TPM_NONOTIFY,
+                                       TPM_RETURNCMD | TPM_NONOTIFY,
                                 p.x, p.y, 0, hwnd, NULL);
       SendMessage(hwnd, WM_COMMAND, cmd, 0);
       return 0;
@@ -145,7 +146,7 @@ void tray_update(struct tray *tray) {
     DestroyIcon(nid.hIcon);
   }
   nid.hIcon = icon;
-  if(tray->tooltip != 0 && strlen(tray->tooltip) > 0) {
+  if (tray->tooltip != 0 && strlen(tray->tooltip) > 0) {
     strncpy(nid.szTip, tray->tooltip, sizeof(nid.szTip));
     nid.uFlags |= NIF_TIP;
   }
@@ -157,6 +158,10 @@ void tray_update(struct tray *tray) {
 }
 
 void tray_exit(void) {
+  if (exit_was_called != FALSE) {
+    return;
+  }
+  exit_was_called = TRUE;
   Shell_NotifyIcon(NIM_DELETE, &nid);
   if (nid.hIcon != 0) {
     DestroyIcon(nid.hIcon);
@@ -164,7 +169,7 @@ void tray_exit(void) {
   if (hmenu != 0) {
     DestroyMenu(hmenu);
   }
-  PostQuitMessage(0);
+  DestroyWindow(hwnd);
   UnregisterClass(WC_TRAY_CLASS_NAME, GetModuleHandle(NULL));
 }
 
