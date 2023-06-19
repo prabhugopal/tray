@@ -1,17 +1,25 @@
 #include <Cocoa/Cocoa.h>
-#include <string.h>
 #include "tray.h"
 
-
-@interface AppDelegate: NSObject <NSApplicationDelegate>
-    - (IBAction)menuCallback:(id)sender;
+@interface MenuDelegate: NSObject <NSMenuDelegate>
+- (void)menuWillOpen:(NSMenu *)menu;
 @end
-@implementation AppDelegate{}
-    - (IBAction)menuCallback:(id)sender
+@implementation MenuDelegate{}
+    - (void)menuWillOpen:(NSMenu *)menu
     {
-        struct tray_menu *m = [[sender representedObject] pointerValue];
-        if (m != NULL && m->cb != NULL) {
-            m->cb(m);
+        if ((int)[[NSApp currentEvent] buttonNumber] == 0) {
+            if (tray_instance->cb != NULL) {
+                [menu cancelTracking];
+                tray_instance->cb(tray_instance);
+            }
+        }
+    }
+    - (void)menuDidClose:(NSMenu *)menu
+    {
+        id representedObject = menu.highlightedItem.representedObject;
+        struct tray_menu *pTrayMenu = [representedObject pointerValue];
+        if (pTrayMenu != NULL && pTrayMenu->cb != NULL) {
+            pTrayMenu->cb(pTrayMenu);
         }
     }
 @end
@@ -19,10 +27,13 @@
 static NSApplication* app;
 static NSStatusBar* statusBar;
 static NSStatusItem* statusItem;
+static MenuDelegate* menuDelegate;
+struct tray *tray_instance;
 
-static NSMenu* _tray_menu(struct tray_menu *m) {
+static NSMenu* nativeMenu(struct tray_menu *m) {
     NSMenu* menu = [[NSMenu alloc] init];
     [menu setAutoenablesItems:FALSE];
+    [menu setDelegate:menuDelegate];
 
     for (; m != NULL && m->text != NULL; m++) {
         if (strcmp(m->text, "-") == 0) {
@@ -30,14 +41,14 @@ static NSMenu* _tray_menu(struct tray_menu *m) {
         } else {
             NSMenuItem* menuItem = [[NSMenuItem alloc]
                 initWithTitle:[NSString stringWithUTF8String:m->text]
-                action:@selector(menuCallback:)
+                action:nil
                 keyEquivalent:@""];
-            [menuItem setEnabled:(m->disabled ? FALSE : TRUE)];
-            [menuItem setState:(m->checked ? 1 : 0)];
+            [menuItem setEnabled:m->disabled == 0 ? TRUE : FALSE];
+            [menuItem setState:m->checked == 1 ? TRUE : FALSE];
             [menuItem setRepresentedObject:[NSValue valueWithPointer:m]];
             [menu addItem:menuItem];
             if (m->submenu != NULL) {
-                [menu setSubmenu:_tray_menu(m->submenu) forItem:menuItem];
+                [menu setSubmenu:nativeMenu(m->submenu) forItem:menuItem];
             }
         }
     }
@@ -45,20 +56,18 @@ static NSMenu* _tray_menu(struct tray_menu *m) {
 }
 
 int tray_init(struct tray *tray) {
-    AppDelegate *delegate = [[AppDelegate alloc] init];
+    menuDelegate = [[MenuDelegate alloc] init];
     app = [NSApplication sharedApplication];
-    [app setDelegate:delegate];
     statusBar = [NSStatusBar systemStatusBar];
     statusItem = [statusBar statusItemWithLength:NSVariableStatusItemLength];
     tray_update(tray);
-    [app activateIgnoringOtherApps:TRUE];
     return 0;
 }
 
 int tray_loop(int blocking) {
     NSDate* until = (blocking ? [NSDate distantFuture] : [NSDate distantPast]);
     NSEvent* event = [app nextEventMatchingMask:ULONG_MAX untilDate:until
-        inMode:[NSString stringWithUTF8String:"kCFRunLoopDefaultMode"] dequeue:TRUE];
+                                         inMode:[NSString stringWithUTF8String:"kCFRunLoopDefaultMode"] dequeue:TRUE];
     if (event) {
         [app sendEvent:event];
     }
@@ -66,11 +75,16 @@ int tray_loop(int blocking) {
 }
 
 void tray_update(struct tray *tray) {
-    NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithUTF8String:tray->icon]];
-    NSSize size = NSMakeSize(16, 16);
-    [image setSize:NSMakeSize(16, 16)];
+    tray_instance = tray;
+    double iconHeight = [[NSStatusBar systemStatusBar] thickness];
+    NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithUTF8String:tray_instance->icon_name]];
+    double width = image.size.width * (iconHeight / image.size.height);
+    [image setSize:NSMakeSize(width, iconHeight)];
     statusItem.button.image = image;
-    [statusItem setMenu:_tray_menu(tray->menu)];
+    if (tray_instance->tooltip != NULL) {
+        statusItem.button.toolTip = [NSString stringWithUTF8String:tray_instance->tooltip];
+    }
+    [statusItem setMenu:nativeMenu(tray_instance->menu)];
 }
 
 void tray_exit(void) {

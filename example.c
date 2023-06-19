@@ -16,7 +16,7 @@
 #define TRAY_ICON2 "mail-message-new"
 #elif TRAY_APPKIT
 #define TRAY_ICON1 "icon.png"
-#define TRAY_ICON2 "icon.png"
+#define TRAY_ICON2 "icon2.png"
 #elif TRAY_WINAPI
 #define TRAY_ICON1 "icon.ico"
 #define TRAY_ICON2 "icon.ico"
@@ -33,10 +33,10 @@ static void toggle_cb(struct tray_menu *item) {
 static void hello_cb(struct tray_menu *item) {
   (void)item;
   printf("hello cb\n");
-  if (strcmp(tray.icon, TRAY_ICON1) == 0) {
-    tray.icon = TRAY_ICON2;
+  if (strcmp(tray.icon_name, TRAY_ICON1) == 0) {
+    tray.icon_name = TRAY_ICON2;
   } else {
-    tray.icon = TRAY_ICON1;
+    tray.icon_name = TRAY_ICON1;
   }
   tray_update(&tray);
 }
@@ -55,20 +55,18 @@ static void submenu_cb(struct tray_menu *item) {
 
 // Test tray init
 static struct tray tray = {
-    .icon = TRAY_ICON1,
-#if TRAY_WINAPI
+    .icon_name = TRAY_ICON1,
     .tooltip = "Tray",
-#endif
     .menu =
         (struct tray_menu[]) {
-            {.text = "Hello", .cb = hello_cb},
-            {.text = "Checked", .checked = 1, .checkbox = 1, .cb = toggle_cb},
+            {.text = "Change Icon", .cb = hello_cb},
+            {.text = "Checked", .checked = 1, .cb = toggle_cb},
             {.text = "Disabled", .disabled = 1},
             {.text = "-"},
             {.text = "SubMenu",
              .submenu =
                  (struct tray_menu[]) {
-                     {.text = "FIRST", .checked = 1, .checkbox = 1, .cb = submenu_cb},
+                     {.text = "FIRST", .checked = 1, .cb = submenu_cb},
                      {.text = "SECOND",
                       .submenu =
                           (struct tray_menu[]) {
@@ -92,7 +90,7 @@ static struct tray tray = {
             {.text = NULL}},
 };
 
-int main() {
+int main(int argc, char **argv) {
   if (tray_init(&tray) < 0) {
     printf("failed to create tray\n");
     return 1;
