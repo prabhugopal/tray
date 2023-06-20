@@ -30,20 +30,19 @@ void toggle_cb(struct tray_menu *item) {
   printf("toggle cb\n");
   item->checked = !item->checked;
 
-  struct tray tray = *tray_get_instance();
-  tray_update(&tray);
+  tray_update(tray_get_instance());
 }
 
 void hello_cb(struct tray_menu *item) {
   (void)item;
   printf("hello cb\n");
-  struct tray tray = *tray_get_instance();
-  if (strcmp(tray.icon_name, TRAY_ICON1) == 0) {
-    tray.icon_name = TRAY_ICON2;
+  struct tray* tray = tray_get_instance();
+  if (strcmp(tray->icon_name, TRAY_ICON1) == 0) {
+    tray->icon_name = TRAY_ICON2;
   } else {
-    tray.icon_name = TRAY_ICON1;
+    tray->icon_name = TRAY_ICON1;
   }
-  tray_update(&tray);
+  tray_update(tray);
 }
 
 void quit_cb(struct tray_menu *item) {
@@ -55,8 +54,7 @@ void quit_cb(struct tray_menu *item) {
 void submenu_cb(struct tray_menu *item) {
   (void)item;
   printf("submenu: clicked on %s\n", item->text);
-  struct tray tray = *tray_get_instance();
-  tray_update(&tray);
+  tray_update(tray_get_instance());
 }
 
 // Test tray init
