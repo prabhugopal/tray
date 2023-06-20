@@ -1,7 +1,7 @@
 #include <Cocoa/Cocoa.h>
 #include "tray.h"
 
-struct tray *tray_instance;
+static struct tray *tray_instance;
 static int loop_result = 0;
 
 @interface MenuDelegate: NSObject <NSMenuDelegate>

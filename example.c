@@ -22,21 +22,22 @@
 #define TRAY_ICON2 "icon2.ico"
 #endif
 
-static struct tray tray;
-
-static void window_cb() {
+void window_cb() {
   printf("window cb\n");
 }
 
-static void toggle_cb(struct tray_menu *item) {
+void toggle_cb(struct tray_menu *item) {
   printf("toggle cb\n");
   item->checked = !item->checked;
+
+  struct tray tray = *tray_get_instance();
   tray_update(&tray);
 }
 
-static void hello_cb(struct tray_menu *item) {
+void hello_cb(struct tray_menu *item) {
   (void)item;
   printf("hello cb\n");
+  struct tray tray = *tray_get_instance();
   if (strcmp(tray.icon_name, TRAY_ICON1) == 0) {
     tray.icon_name = TRAY_ICON2;
   } else {
@@ -45,20 +46,21 @@ static void hello_cb(struct tray_menu *item) {
   tray_update(&tray);
 }
 
-static void quit_cb(struct tray_menu *item) {
+void quit_cb(struct tray_menu *item) {
   (void)item;
   printf("quit cb\n");
   tray_exit();
 }
 
-static void submenu_cb(struct tray_menu *item) {
+void submenu_cb(struct tray_menu *item) {
   (void)item;
   printf("submenu: clicked on %s\n", item->text);
+  struct tray tray = *tray_get_instance();
   tray_update(&tray);
 }
 
 // Test tray init
-static struct tray tray = {
+struct tray tray = {
     .icon_name = TRAY_ICON1,
     .tooltip = "Tray",
     .cb = window_cb,

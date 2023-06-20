@@ -160,6 +160,8 @@ void tray_update(struct tray *tray) {
   if (prevmenu != NULL) {
     DestroyMenu(prevmenu);
   }
+
+  tray_instance = tray;
 }
 
 void tray_exit(void) {

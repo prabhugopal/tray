@@ -73,6 +73,8 @@ void tray_update(struct tray *tray) {
   // GTK is all about reference counting, so previous menu should be destroyed
   // here
   app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
+
+  tray_instance = tray;
 }
 
 void tray_exit(void) { loop_result = -1; }
