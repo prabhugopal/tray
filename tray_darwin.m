@@ -29,6 +29,7 @@ static NSStatusBar* statusBar;
 static NSStatusItem* statusItem;
 static MenuDelegate* menuDelegate;
 struct tray *tray_instance;
+static int loop_result = 0;
 
 static NSMenu* nativeMenu(struct tray_menu *m) {
     NSMenu* menu = [[NSMenu alloc] init];
@@ -71,7 +72,7 @@ int tray_loop(int blocking) {
     if (event) {
         [app sendEvent:event];
     }
-    return 0;
+    return loop_result;
 }
 
 void tray_update(struct tray *tray) {
@@ -87,7 +88,4 @@ void tray_update(struct tray *tray) {
     [statusItem setMenu:nativeMenu(tray_instance->menu)];
 }
 
-void tray_exit(void) {
-    [app terminate:app];
-}
-
+void tray_exit(void) { loop_result = -1; }
