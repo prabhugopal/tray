@@ -57,6 +57,11 @@ static NSMenu* nativeMenu(struct tray_menu *m) {
     return menu;
 }
 
+
+struct tray * tray_get_instance() {
+  return tray_instance;
+}
+
 int tray_init(struct tray *tray) {
     menuDelegate = [[MenuDelegate alloc] init];
     app = [NSApplication sharedApplication];

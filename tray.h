@@ -13,7 +13,11 @@ extern "C"
 #define TRAY_EXPORT __declspec(dllimport)
 #endif
 #else
+#ifdef __GNUC__ >= 4 || defined(__clang__)
+#define TRAY_EXPORT __attribute__((visibility("default")))
+#else
 #define TRAY_EXPORT
+#endif
 #endif
 
 struct tray {
@@ -30,6 +34,9 @@ struct tray_menu {
   void (*cb)(struct tray_menu *);
   struct tray_menu *submenu;
 };
+
+TRAY_EXPORT
+struct tray * tray_get_instance();
 
 TRAY_EXPORT
 int tray_init(struct tray *tray);

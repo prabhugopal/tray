@@ -38,6 +38,8 @@ set_property(TARGET tray PROPERTY C_STANDARD 99)
 
 target_compile_definitions(tray PRIVATE TRAY_EXPORTS)
 
+set_target_properties(tray PROPERTIES C_VISIBILITY_PRESET hidden)
+
 if(WIN32)
 	target_compile_definitions(tray PRIVATE TRAY_WINAPI=1 WIN32_LEAN_AND_MEAN NOMINMAX)
 else()
