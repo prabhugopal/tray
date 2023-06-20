@@ -13,7 +13,7 @@ extern "C"
 #define TRAY_EXPORT __declspec(dllimport)
 #endif
 #else
-#ifdef __GNUC__ >= 4 || defined(__clang__)
+#if __GNUC__ >= 4 || defined(__clang__)
 #define TRAY_EXPORT __attribute__((visibility("default")))
 #else
 #define TRAY_EXPORT
