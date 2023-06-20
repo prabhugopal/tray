@@ -24,6 +24,10 @@
 
 static struct tray tray;
 
+static void window_cb() {
+  printf("window cb\n");
+}
+
 static void toggle_cb(struct tray_menu *item) {
   printf("toggle cb\n");
   item->checked = !item->checked;
@@ -57,6 +61,7 @@ static void submenu_cb(struct tray_menu *item) {
 static struct tray tray = {
     .icon_name = TRAY_ICON1,
     .tooltip = "Tray",
+    .cb = window_cb,
     .menu =
         (struct tray_menu[]) {
             {.text = "Change Icon", .cb = hello_cb},
