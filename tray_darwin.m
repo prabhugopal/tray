@@ -3,6 +3,9 @@
 
 static struct tray *tray_instance;
 static int loop_result = 0;
+static NSApplication* app;
+static NSStatusBar* statusBar;
+static NSStatusItem* statusItem;
 
 @interface MenuDelegate: NSObject <NSMenuDelegate>
 - (void)menuWillOpen:(NSMenu *)menu;
@@ -10,7 +13,7 @@ static int loop_result = 0;
 @implementation MenuDelegate{}
     - (void)menuWillOpen:(NSMenu *)menu
     {
-        if ((int)[[NSApp currentEvent] buttonNumber] == 0) {
+        if (menu == [statusItem menu] && (int)[[NSApp currentEvent] buttonNumber] == 0) {
             if (tray_instance->cb != NULL) {
                 [menu cancelTracking];
                 tray_instance->cb(tray_instance);
@@ -27,9 +30,6 @@ static int loop_result = 0;
     }
 @end
 
-static NSApplication* app;
-static NSStatusBar* statusBar;
-static NSStatusItem* statusItem;
 static MenuDelegate* menuDelegate;
 
 static NSMenu* nativeMenu(struct tray_menu *m) {
@@ -56,7 +56,6 @@ static NSMenu* nativeMenu(struct tray_menu *m) {
     }
     return menu;
 }
-
 
 struct tray * tray_get_instance() {
   return tray_instance;

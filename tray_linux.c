@@ -68,11 +68,14 @@ int tray_loop(int blocking) {
 }
 
 void tray_update(struct tray *tray) {
+    struct _GtkMenu *menu = GTK_MENU(_tray_menu(tray->menu));
+  app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
   app_indicator_set_icon(indicator, tray->icon_name);
+
   printf("Opened %s\n", tray->icon_name);
   // GTK is all about reference counting, so previous menu should be destroyed
   // here
-  app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
+  //app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
 
   tray_instance = tray;
 }

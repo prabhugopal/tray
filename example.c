@@ -12,8 +12,8 @@
 #include "tray.h"
 
 #if TRAY_APPINDICATOR
-#define TRAY_ICON1 "mail-message-new"
-#define TRAY_ICON2 "mail-message-new"
+#define TRAY_ICON1 "icon-24px.png"
+#define TRAY_ICON2 "icon2-24px.png"
 #elif TRAY_APPKIT
 #define TRAY_ICON1 "icon.png"
 #define TRAY_ICON2 "icon2.png"
@@ -54,7 +54,7 @@ void quit_cb(struct tray_menu *item) {
 void submenu_cb(struct tray_menu *item) {
   (void)item;
   printf("submenu: clicked on %s\n", item->text);
-  tray_update(tray_get_instance());
+//  tray_update(tray_get_instance());
 }
 
 // Test tray init
