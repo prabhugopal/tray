@@ -5,6 +5,7 @@
 
 #define TRAY_APPINDICATOR_ID "tray-id"
 
+static struct tray *tray_instance;
 static AppIndicator *indicator = NULL;
 static int loop_result = 0;
 
@@ -38,6 +39,10 @@ static GtkMenuShell *_tray_menu(struct tray_menu *m) {
     gtk_menu_shell_append(menu, item);
   }
   return menu;
+}
+
+struct tray * tray_get_instance() {
+  return tray_instance;
 }
 
 int tray_init(struct tray *tray) {

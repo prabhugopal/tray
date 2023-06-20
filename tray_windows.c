@@ -6,6 +6,7 @@
 #define WC_TRAY_CLASS_NAME "TRAY"
 #define ID_TRAY_FIRST 1000
 
+static struct tray *tray_instance;
 static WNDCLASSEX wc;
 static NOTIFYICONDATA nid;
 static HWND hwnd;
@@ -88,6 +89,10 @@ static HMENU _tray_menu(struct tray_menu *m, UINT *id) {
     }
   }
   return hmenu;
+}
+
+struct tray * tray_get_instance() {
+  return tray_instance;
 }
 
 int tray_init(struct tray *tray) {
