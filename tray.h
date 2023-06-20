@@ -31,8 +31,6 @@ struct tray_menu {
   struct tray_menu *submenu;
 };
 
-extern struct tray *tray_instance;
-
 TRAY_EXPORT
 int tray_init(struct tray *tray);
 

@@ -1,6 +1,9 @@
 #include <Cocoa/Cocoa.h>
 #include "tray.h"
 
+struct tray *tray_instance;
+static int loop_result = 0;
+
 @interface MenuDelegate: NSObject <NSMenuDelegate>
 - (void)menuWillOpen:(NSMenu *)menu;
 @end
@@ -28,8 +31,6 @@ static NSApplication* app;
 static NSStatusBar* statusBar;
 static NSStatusItem* statusItem;
 static MenuDelegate* menuDelegate;
-struct tray *tray_instance;
-static int loop_result = 0;
 
 static NSMenu* nativeMenu(struct tray_menu *m) {
     NSMenu* menu = [[NSMenu alloc] init];
