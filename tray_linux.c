@@ -8,6 +8,12 @@
 static AppIndicator *indicator = NULL;
 static int loop_result = 0;
 
+static void _tray_cb(GtkMenuItem *item, gpointer data) {
+    (void)item;
+    struct tray_menu *m = (struct tray_menu *)data;
+    m->cb(m);
+}
+
 static void _tray_menu_cb(GtkMenuItem *item, gpointer data) {
   (void)item;
   struct tray_menu *m = (struct tray_menu *)data;
@@ -44,7 +50,7 @@ int tray_init(struct tray *tray) {
   if (gtk_init_check(0, NULL) == FALSE) {
     return -1;
   }
-  indicator = app_indicator_new(TRAY_APPINDICATOR_ID, tray->icon,
+  indicator = app_indicator_new(TRAY_APPINDICATOR_ID, tray->icon_name,
                                 APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
   app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
   tray_update(tray);
@@ -57,7 +63,8 @@ int tray_loop(int blocking) {
 }
 
 void tray_update(struct tray *tray) {
-  app_indicator_set_icon(indicator, tray->icon);
+  app_indicator_set_icon(indicator, tray->icon_name);
+  printf("Opened %s\n", tray->icon_name);
   // GTK is all about reference counting, so previous menu should be destroyed
   // here
   app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
