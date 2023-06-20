@@ -12,6 +12,8 @@ extern "C"
 #else
 #define TRAY_EXPORT __declspec(dllimport)
 #endif
+#else
+#define TRAY_EXPORT
 #endif
 
 struct tray {
