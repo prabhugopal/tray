@@ -6,6 +6,14 @@ extern "C"
 {
 #endif
 
+#if WIN32
+#ifdef TRAY_EXPORTS
+#define TRAY_EXPORT __declspec(dllexport)
+#else
+#define TRAY_EXPORT __declspec(dllimport)
+#endif
+#endif
+
 struct tray {
   const char *icon_name;
   char *tooltip;
@@ -23,13 +31,16 @@ struct tray_menu {
 
 extern struct tray *tray_instance;
 
+TRAY_EXPORT
 int tray_init(struct tray *tray);
 
+TRAY_EXPORT
 int tray_loop(int blocking);
 
+TRAY_EXPORT
 void tray_update(struct tray *tray);
 
-//TODO: Can we drop this?  It is harmful on MacOS.
+TRAY_EXPORT
 void tray_exit(void);
 
 #ifdef __cplusplus

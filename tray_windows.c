@@ -39,7 +39,7 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
       MENUITEMINFO item = {
           .cbSize = sizeof(MENUITEMINFO), .fMask = MIIM_ID | MIIM_DATA,
       };
-      if (GetMenuItemInfo(hmenu, wparam, FALSE, &item)) {
+      if (GetMenuItemInfo(hmenu, (UINT)wparam, FALSE, &item)) {
         struct tray_menu *menu = (struct tray_menu *)item.dwItemData;
         if (menu != NULL && menu->cb != NULL) {
           menu->cb(menu);
@@ -141,7 +141,7 @@ void tray_update(struct tray *tray) {
   hmenu = _tray_menu(tray->menu, &id);
   SendMessage(hwnd, WM_INITMENUPOPUP, (WPARAM)hmenu, 0);
   HICON icon;
-  ExtractIconEx(tray->icon, 0, NULL, &icon, 1);
+  ExtractIconEx(tray->icon_name, 0, NULL, &icon, 1);
   if (nid.hIcon) {
     DestroyIcon(nid.hIcon);
   }
