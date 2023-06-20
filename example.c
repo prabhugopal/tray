@@ -19,7 +19,7 @@
 #define TRAY_ICON2 "icon2.png"
 #elif TRAY_WINAPI
 #define TRAY_ICON1 "icon.ico"
-#define TRAY_ICON2 "icon.ico"
+#define TRAY_ICON2 "icon2.ico"
 #endif
 
 static struct tray tray;
