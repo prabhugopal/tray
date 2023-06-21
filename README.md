@@ -68,13 +68,17 @@ array must have text field set to NULL.
 
 ## Icons
 
-Icons are platform-specific but generally should have transparent backgrounds and be simple:
-- Windows: .ICO with 16x16 & 32x32 sizes included.
-- MacOS: .PNG with a notional 22pt height or vector-based .PDF with black-and-white images.
-- Linux: .PNG 24x24 pixels.
+Icons are platform-specific but generally should have transparent backgrounds and be simple (since 
+they are tiny).
 
 Tray does not provide any theming or icon management.  It is up to the application to respond
 to theme changes and supply appropriate icons e.g. dark mode.
+
+| Platform | Icon format                                                                             |
+|---------|:----------------------------------------------------------------------------------------|
+| Windows | .ICO with 16x16 & 32x32 sizes included                                                  |
+| MacOS   | .PNG with a notional 22pt height or vector-based .PDF (recommend black or white images) |
+| Linux   | .PNG 24x24 pixels                                                                       |
 
 ## Prerequisites
 
