@@ -6,7 +6,7 @@
 #define WC_TRAY_CLASS_NAME "TRAY"
 #define ID_TRAY_FIRST 1000
 
-static struct tray *tray_instance;
+static struct tray_menu *tray_instance;
 static WNDCLASSEX wc;
 static NOTIFYICONDATA nid;
 static HWND hwnd;
@@ -41,7 +41,7 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
           .cbSize = sizeof(MENUITEMINFO), .fMask = MIIM_ID | MIIM_DATA,
       };
       if (GetMenuItemInfo(hmenu, (UINT)wparam, FALSE, &item)) {
-        struct tray_menu *menu = (struct tray_menu *)item.dwItemData;
+        struct tray_menu_item *menu = (struct tray_menu_item *)item.dwItemData;
         if (menu != NULL && menu->cb != NULL) {
           menu->cb(menu);
         }
@@ -59,7 +59,7 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
   return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-static HMENU _tray_menu(struct tray_menu *m, UINT *id) {
+static HMENU _tray_menu_item(struct tray_menu_item *m, UINT *id) {
   HMENU hmenu = CreatePopupMenu();
   for (; m != NULL && m->text != NULL; m++, (*id)++) {
     if (strcmp(m->text, "-") == 0) {
@@ -73,7 +73,7 @@ static HMENU _tray_menu(struct tray_menu *m, UINT *id) {
       item.fState = 0;
       if (m->submenu != NULL) {
         item.fMask = item.fMask | MIIM_SUBMENU;
-        item.hSubMenu = _tray_menu(m->submenu, id);
+        item.hSubMenu = _tray_menu_item(m->submenu, id);
       }
       if (m->disabled) {
         item.fState |= MFS_DISABLED;
@@ -91,14 +91,17 @@ static HMENU _tray_menu(struct tray_menu *m, UINT *id) {
   return hmenu;
 }
 
-struct tray * tray_get_instance() {
+struct tray_menu * tray_get_instance() {
   return tray_instance;
 }
 
-int tray_init(struct tray *tray) {
+int tray_init(struct tray_menu *tray) {
+    OutputDebugStringA("Init started");
   wm_taskbarcreated = RegisterWindowMessage("TaskbarCreated");
+    OutputDebugStringA("Init 2");
 
   memset(&wc, 0, sizeof(wc));
+    OutputDebugStringA("Memset done");
   wc.cbSize = sizeof(WNDCLASSEX);
   wc.lpfnWndProc = _tray_wnd_proc;
   wc.hInstance = GetModuleHandle(NULL);
@@ -140,10 +143,10 @@ int tray_loop(int blocking) {
   return 0;
 }
 
-void tray_update(struct tray *tray) {
+void tray_update(struct tray_menu *tray) {
   HMENU prevmenu = hmenu;
   UINT id = ID_TRAY_FIRST;
-  hmenu = _tray_menu(tray->menu, &id);
+  hmenu = _tray_menu_item(tray->menu, &id);
   SendMessage(hwnd, WM_INITMENUPOPUP, (WPARAM)hmenu, 0);
   HICON icon;
   ExtractIconEx(tray->icon_name, 0, NULL, &icon, 1);

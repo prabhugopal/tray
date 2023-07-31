@@ -5,23 +5,23 @@
 
 #define TRAY_APPINDICATOR_ID "tray-id"
 
-static struct tray *tray_instance;
+static struct tray_menu *tray_instance;
 static AppIndicator *indicator = NULL;
-static int loop_result = 0;
+static bool continue_running = true;
 
 static void _tray_cb(GtkMenuItem *item, gpointer data) {
     (void)item;
-    struct tray_menu *m = (struct tray_menu *)data;
+    struct tray_menu_item *m = (struct tray_menu_item *)data;
     m->cb(m);
 }
 
-static void _tray_menu_cb(GtkMenuItem *item, gpointer data) {
+static void _tray_menu_item_cb(GtkMenuItem *item, gpointer data) {
   (void)item;
-  struct tray_menu *m = (struct tray_menu *)data;
+  struct tray_menu_item *m = (struct tray_menu_item *)data;
   m->cb(m);
 }
 
-static GtkMenuShell *_tray_menu(struct tray_menu *m) {
+static GtkMenuShell *_tray_menu_item(struct tray_menu_item *m) {
   GtkMenuShell *menu = (GtkMenuShell *)gtk_menu_new();
   for (; m != NULL && m->text != NULL; m++) {
     GtkWidget *item;
@@ -31,14 +31,14 @@ static GtkMenuShell *_tray_menu(struct tray_menu *m) {
       if (m->submenu != NULL) {
         item = gtk_menu_item_new_with_label(m->text);
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item),
-                                  GTK_WIDGET(_tray_menu(m->submenu)));
+                                  GTK_WIDGET(_tray_menu_item(m->submenu)));
       } else {
         item = gtk_check_menu_item_new_with_label(m->text);
         gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), !!m->checked);
       }
       gtk_widget_set_sensitive(item, !m->disabled);
       if (m->cb != NULL) {
-        g_signal_connect(item, "activate", G_CALLBACK(_tray_menu_cb), m);
+        g_signal_connect(item, "activate", G_CALLBACK(_tray_menu_item_cb), m);
       }
     }
     gtk_widget_show(item);
@@ -47,38 +47,38 @@ static GtkMenuShell *_tray_menu(struct tray_menu *m) {
   return menu;
 }
 
-struct tray * tray_get_instance() {
+struct tray_menu * tray_get_instance() {
   return tray_instance;
 }
 
-int tray_init(struct tray *tray) {
+bool tray_init(struct tray_menu *tray) {
   if (gtk_init_check(0, NULL) == FALSE) {
-    return -1;
+    return false;
   }
   indicator = app_indicator_new(TRAY_APPINDICATOR_ID, tray->icon_name,
                                 APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
   app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
   tray_update(tray);
-  return 0;
+  return true;
 }
 
-int tray_loop(int blocking) {
+bool tray_loop(bool blocking) {
   gtk_main_iteration_do(blocking);
-  return loop_result;
+  return continue_running;
 }
 
-void tray_update(struct tray *tray) {
-    struct _GtkMenu *menu = GTK_MENU(_tray_menu(tray->menu));
-  app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
+void tray_update(struct tray_menu *tray) {
+    struct _GtkMenu *menu = GTK_MENU(_tray_menu_item(tray->menu));
+  app_indicator_set_menu(indicator, GTK_MENU(_tray_menu_item(tray->menu)));
   app_indicator_set_icon(indicator, tray->icon_name);
 
   printf("Opened %s\n", tray->icon_name);
   // GTK is all about reference counting, so previous menu should be destroyed
   // here
-  //app_indicator_set_menu(indicator, GTK_MENU(_tray_menu(tray->menu)));
+  //app_indicator_set_menu(indicator, GTK_MENU(_tray_menu_item(tray->menu)));
 
   tray_instance = tray;
 }
 
-void tray_exit(void) { loop_result = -1; }
+void tray_exit(void) { continue_running = false; }
 
