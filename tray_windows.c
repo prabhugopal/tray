@@ -24,6 +24,10 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
     PostQuitMessage(0);
     return 0;
   case WM_TRAY_CALLBACK_MESSAGE:
+    if (lparam == WM_LBUTTONUP && tray_instance->callback != NULL) {
+      tray_instance->callback();
+      return 0;
+    }
     if (lparam == WM_LBUTTONUP || lparam == WM_RBUTTONUP) {
       POINT p;
       GetCursorPos(&p);
