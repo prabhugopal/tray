@@ -1,52 +1,62 @@
 name: Integration
 
 on:
-    push:
-      branches: [ main, master ]
-    pull_request:
-      branches: [ '**', '!gh-pages', '!coverage' ]
-      types: [ opened, reopened, ready_for_review, synchronize ]
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ '**', '!gh-pages', '!coverage' ]
+    types: [ opened, reopened, ready_for_review, synchronize ]
   
 defaults:
-    run:
-        shell: bash
+  run:
+    shell: bash
 
 jobs:
-    threshold:
-        name: Check Status
-        uses: StirlingLabs/Actions/.github/workflows/threshold.yaml@v23.04.0
-    
-    build:
-        name: Build
-        needs: threshold
-        if: |
-          needs.threshold.outputs.continue == 'true' && 
-          needs.threshold.outputs.release != 'true'
-        strategy:
-            matrix:
-                os: [ ubuntu-latest, macos-latest, windows-latest ]
-        runs-on: ${{ matrix.os }}
-        steps:
-        -   uses: actions/checkout@v3
-        -   name: Configure
-            run: |
-                mkdir build
-                cd build
-                cmake -G Ninja .. -DCMAKE_BUILD_TYPE=Release
-        -   name: Make
-            working-directory: build
-            run: ninja
-        -   name: Rename
-            working-directory: build
-            if: startsWith(matrix.os, 'windows')
-            run: |
-                mv libtray.dll tray.dll
-        -   uses: actions/upload-artifact@v3
-            name: Artifact
-            with:
-                name: libtray-{{ matrix.os }}
-                path: |
-                    build/libtray.so
-                    build/libtray.dylib
-                    build/tray.dll
-                if-no-files-found: error
+  threshold:
+    name: Check Status
+    uses: StirlingLabs/Actions/.github/workflows/threshold.yaml@v23.04.0
+  
+  build:
+    name: Build
+    needs: threshold
+    if: |
+      needs.threshold.outputs.continue == 'true' && 
+      needs.threshold.outputs.release != 'true'
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Ninja
+      run: |
+        case ${{ matrix.os }} in
+          ubuntu-latest)  ninja_os=linux ;;
+          macos-latest)   ninja_os=mac ;;
+          windows-latest) ninja_os=win ;;
+        esac
+        wget https://github.com/ninja-build/ninja/releases/latest/download/ninja-$ninja_os.zip
+        sudo unzip ninja-$ninja_os.zip -d /usr/local/bin/
+        ninja --version
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -G Ninja ..
+    - name: Make
+      working-directory: build
+      run: ninja
+    - name: Rename
+      working-directory: build
+      if: startsWith(matrix.os, 'windows')
+      run: |
+        mv libtray.dll tray.dll
+    - uses: actions/upload-artifact@v3
+      name: Artifact
+      with:
+        name: libtray-{{ matrix.os }}
+        path: |
+          build/libtray.so
+          build/libtray.dylib
+          build/tray.dll
+        if-no-files-found: error
