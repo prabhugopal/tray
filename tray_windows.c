@@ -6,7 +6,7 @@
 #define WC_TRAY_CLASS_NAME "TRAY"
 #define ID_TRAY_FIRST 1000
 
-static struct tray_menu *tray_instance;
+static struct tray *tray_instance;
 static WNDCLASSEX wc;
 static NOTIFYICONDATA nid;
 static HWND hwnd;
@@ -24,8 +24,8 @@ static LRESULT CALLBACK _tray_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam,
     PostQuitMessage(0);
     return 0;
   case WM_TRAY_CALLBACK_MESSAGE:
-    if (lparam == WM_LBUTTONUP && tray_instance->callback != NULL) {
-      tray_instance->callback();
+    if (lparam == WM_LBUTTONUP && tray_instance->cb != NULL) {
+      tray_instance->cb(tray_get_instance());
       return 0;
     }
     if (lparam == WM_LBUTTONUP || lparam == WM_RBUTTONUP) {
@@ -95,11 +95,11 @@ static HMENU _tray_menu_item(struct tray_menu_item *m, UINT *id) {
   return hmenu;
 }
 
-struct tray_menu * tray_get_instance() {
+struct tray * tray_get_instance() {
   return tray_instance;
 }
 
-int tray_init(struct tray_menu *tray) {
+int tray_init(struct tray *tray) {
     OutputDebugStringA("Init started");
   wm_taskbarcreated = RegisterWindowMessage("TaskbarCreated");
     OutputDebugStringA("Init 2");
@@ -147,13 +147,13 @@ int tray_loop(int blocking) {
   return 0;
 }
 
-void tray_update(struct tray_menu *tray) {
+void tray_update(struct tray *tray) {
   HMENU prevmenu = hmenu;
   UINT id = ID_TRAY_FIRST;
   hmenu = _tray_menu_item(tray->menu, &id);
   SendMessage(hwnd, WM_INITMENUPOPUP, (WPARAM)hmenu, 0);
   HICON icon;
-  ExtractIconEx(tray->icon_name, 0, NULL, &icon, 1);
+  ExtractIconEx(tray->icon_filepath, 0, NULL, &icon, 1);
   if (nid.hIcon) {
     DestroyIcon(nid.hIcon);
   }

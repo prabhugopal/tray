@@ -2,7 +2,7 @@
 #include "tray.h"
 
 static int loop_status = 0;
-static struct tray_menu *tray_instance;
+static struct tray *tray_instance;
 static NSApplication* app;
 static NSStatusBar* statusBar;
 static NSStatusItem* statusItem;
@@ -57,11 +57,11 @@ static NSMenu* nativeMenu(struct tray_menu_item *m) {
     return menu;
 }
 
-struct tray_menu * tray_get_instance() {
+struct tray * tray_get_instance() {
   return tray_instance;
 }
 
-int tray_init(struct tray_menu *tray) {
+int tray_init(struct tray *tray) {
     menuDelegate = [[MenuDelegate alloc] init];
     app = [NSApplication sharedApplication];
     statusBar = [NSStatusBar systemStatusBar];
@@ -80,10 +80,10 @@ int tray_loop(int blocking) {
     return loop_status;
 }
 
-void tray_update(struct tray_menu *tray) {
+void tray_update(struct tray *tray) {
     tray_instance = tray;
     double iconHeight = [[NSStatusBar systemStatusBar] thickness];
-    NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithUTF8String:tray_instance->icon_name]];
+    NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithUTF8String:tray_instance->icon_filepath]];
     double width = image.size.width * (iconHeight / image.size.height);
     [image setSize:NSMakeSize(width, iconHeight)];
     statusItem.button.image = image;

@@ -20,10 +20,10 @@ extern "C"
 #endif
 #endif
 
-struct tray_menu {
-  const char *icon_name;
+struct tray {
+  const char *icon_filepath;
   char *tooltip;
-  void (*cb)(struct tray_menu *); // called on left click, leave null to just open menu
+  void (*cb)(struct tray *); // called on left click, leave null to just open menu
   struct tray_menu_item *menu;
 };
 
@@ -36,16 +36,16 @@ struct tray_menu_item {
 };
 
 TRAY_EXPORT
-struct tray_menu * tray_get_instance();
+struct tray * tray_get_instance();
 
 TRAY_EXPORT
-int tray_init(struct tray_menu *tray);
+int tray_init(struct tray *tray);
 
 TRAY_EXPORT
 int tray_loop(int blocking);
 
 TRAY_EXPORT
-void tray_update(struct tray_menu *tray);
+void tray_update(struct tray *tray);
 
 TRAY_EXPORT
 void tray_exit(void);

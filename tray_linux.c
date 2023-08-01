@@ -5,7 +5,7 @@
 
 #define TRAY_APPINDICATOR_ID "tray-id"
 
-static struct tray_menu *tray_instance;
+static struct tray *tray_instance;
 static AppIndicator *indicator = NULL;
 static bool continue_running = true;
 
@@ -47,15 +47,15 @@ static GtkMenuShell *_tray_menu_item(struct tray_menu_item *m) {
   return menu;
 }
 
-struct tray_menu * tray_get_instance() {
+struct tray * tray_get_instance() {
   return tray_instance;
 }
 
-bool tray_init(struct tray_menu *tray) {
+bool tray_init(struct tray *tray) {
   if (gtk_init_check(0, NULL) == FALSE) {
     return false;
   }
-  indicator = app_indicator_new(TRAY_APPINDICATOR_ID, tray->icon_name,
+  indicator = app_indicator_new(TRAY_APPINDICATOR_ID, tray->icon_filepath,
                                 APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
   app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
   tray_update(tray);
@@ -67,12 +67,10 @@ bool tray_loop(bool blocking) {
   return continue_running;
 }
 
-void tray_update(struct tray_menu *tray) {
+void tray_update(struct tray *tray) {
     struct _GtkMenu *menu = GTK_MENU(_tray_menu_item(tray->menu));
   app_indicator_set_menu(indicator, GTK_MENU(_tray_menu_item(tray->menu)));
-  app_indicator_set_icon(indicator, tray->icon_name);
-
-  printf("Opened %s\n", tray->icon_name);
+  app_indicator_set_icon(indicator, tray->icon_filepath);
   // GTK is all about reference counting, so previous menu should be destroyed
   // here
   //app_indicator_set_menu(indicator, GTK_MENU(_tray_menu_item(tray->menu)));

@@ -36,11 +36,11 @@ void toggle_cb(struct tray_menu_item *item) {
 void hello_cb(struct tray_menu_item *item) {
   (void)item;
   printf("hello cb\n");
-  struct tray_menu* tray = tray_get_instance();
-  if (strcmp(tray->icon_name, TRAY_ICON1) == 0) {
-    tray->icon_name = TRAY_ICON2;
+  struct tray* tray = tray_get_instance();
+  if (strcmp(tray->icon_filepath, TRAY_ICON1) == 0) {
+    tray->icon_filepath = TRAY_ICON2;
   } else {
-    tray->icon_name = TRAY_ICON1;
+    tray->icon_filepath = TRAY_ICON1;
   }
   tray_update(tray);
 }
@@ -58,8 +58,8 @@ void submenu_cb(struct tray_menu_item *item) {
 }
 
 // Test tray init
-struct tray_menu tray = {
-    .icon_name = TRAY_ICON1,
+struct tray tray = {
+    .icon_filepath = TRAY_ICON1,
     .tooltip = "Tray",
     .cb = window_cb,
     .menu =

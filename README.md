@@ -35,16 +35,16 @@ this are welcome.
 
 ## API
 
-The `tray_menu` structure defines the tray and a nested menu of NULL-terminated array of entries.
+The `tray` structure defines the tray and a nested menu of NULL-terminated array of entries.
 `tray_menu_item` defines each menu entry text, menu checked and disabled (grayed) flags.
 
-The `tray_menu` and `tray_menu_item` each have an optional callback if they are selected.
+The `tray` and `tray_menu_item` each have an optional callback if they are selected.
 
 ```c
-struct tray_menu {
-  const char *icon_name;
+struct tray {
+  const char *icon_filepath;
   char *tooltip;
-  void (*cb)(struct tray_menu *); // called on left click, leave null to just open menu
+  void (*cb)(struct tray *); // called on left click, leave null to just open menu
   struct tray_menu_item *menu; // NULL-terminated array of menu items
 };
 
@@ -57,9 +57,9 @@ struct tray_menu_item {
 };
 ```
 
-* `int tray_init(struct tray_menu *)` - creates tray_menu icon. Returns -1 if tray icon/menu can't be created.
-* `struct tray_menu * tray_get_instance()` - returns the tray_menu instance.
-* `void tray_update(struct tray_menu *)` - updates tray icon and menu.
+* `int tray_init(struct tray *)` - creates tray icon. Returns -1 if tray icon/menu can't be created.
+* `struct tray * tray_get_instance()` - returns the tray instance.
+* `void tray_update(struct tray *)` - updates tray icon and menu.
 * `int tray_loop(int blocking)` - runs one iteration of the UI loop. Returns -1 if `tray_exit()` has been called.
 * `void tray_exit()` - terminates UI loop.
 
