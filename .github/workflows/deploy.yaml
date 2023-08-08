@@ -74,7 +74,7 @@ jobs:
           filename: ${{ matrix.filename }}
         run: |
           find . -maxdepth 1 -type f -name "*.dll" 2>/dev/null | wc -l
-          dllCount=$(find . -maxdepth 1 -type f -name "*.dll") 2>/dev/null
+          dllCount=$(find . -maxdepth 1 -type f -name "*.dll" | wc -l) 2>/dev/null
           if [[ $dllCount -eq 1 ]] ; then
             mv ./*.dll $filename
           else
