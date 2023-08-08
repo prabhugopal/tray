@@ -3,15 +3,14 @@
 
 Cross-platform, super tiny C99[^1] implementation of a system tray/menu bar icon with popup menu.
 
+[^1]: At least, it's super tiny and C99 on Mac & Windows.
+
 The optional primary-click callback can hide/show a window while secondary-click shows a menu.  
-If no callback is specified, either click will show the menu.
+If no callback is specified, either click will show the menu.  The system can be dynamically 
+updated; icon, tooltip, menu items and status (checked/unchecked & enabled/disabled) can all be 
+both queried and changed at runtime. 
 
-The system can be dynamically updated; icon, tooltip, menu items and status (checked/unchecked &
-enabled/disabled) can all be both queried and changed at runtime. Code is C++ friendly and will 
-compile fine in C++98 and up on Windows or Mac but requires C++17 on Mac.  This fork is intended 
-to make the functionality available as a library, for use from other languages.
-
-[^1]: At least it's super tiny and C99 on Mac & Windows.
+Code is C++ friendly and will compile fine in C99 or C++98 and up on Windows or Mac but requires C++17 on Linux.
 
 Focussed PRs are welcome, especially improvements to the Linux implementation.  The goal is to 
 keep the code as simple as possible, so functionality beyond presenting a tray icon and menu is 
@@ -117,7 +116,9 @@ Build & execute the `tray_example` application:
 
 ## History
 
-This fork is in turn based on a previous [fork by dmikushin](https://github.com/dmikushin/tray) that brings together the
+This fork is predominantly to make the functionality available as a library, for use from other languages.
+
+It based on a previous [fork by dmikushin](https://github.com/dmikushin/tray) that brings together the
 [original work of Serge Zaitsev](https://github.com/zserge/tray) and "the most interesting forks and PRs of
 respectable contributors" including:
 

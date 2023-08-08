@@ -6,7 +6,13 @@ on:
   pull_request:
     branches: [ '**', '!gh-pages', '!coverage' ]
     types: [ opened, reopened, ready_for_review, synchronize ]
-  
+  workflow_call:
+    inputs:
+      ref:
+        description: Reference to use for checking out
+        default: ${{ github.sha }}
+        type: string
+    
 defaults:
   run:
     shell: bash
@@ -20,8 +26,8 @@ jobs:
     name: Build
     needs: threshold
     if: |
-      needs.threshold.outputs.continue == 'true' && 
-      needs.threshold.outputs.release != 'true'
+      needs.threshold.outputs.continue == 'true' ||
+      needs.threshold.outputs.release == 'true'
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
@@ -30,24 +36,23 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install Ninja
       run: |
-        case ${{ matrix.os }} in
-          ubuntu-latest)  ninja_os=linux ;;
-          macos-latest)   ninja_os=mac ;;
-          windows-latest) ninja_os=win ;;
+        case ${{ runner.os }} in
+          Linux)   ninja_os=linux ;;
+          macOS)   ninja_os=mac ;;
+          Windows) ninja_os=win ;;
         esac
         url="https://github.com/ninja-build/ninja/releases/latest/download/ninja-$ninja_os.zip"
         curl -L -o ninja-$ninja_os.zip $url
-        if [[ ${{ matrix.os }} == 'windows-latest' ]]; then
+        if [[ ${{ runner.os }} == 'Windows' ]]; then
           unzip ninja-$ninja_os.zip -d .
           export PATH=$PATH:"$(pwd -W)"
-          ls -l
         else
           sudo unzip ninja-$ninja_os.zip -d /usr/local/bin/
         fi
         
         ninja --version
     - name: Install Dependencies
-      if: startsWith(matrix.os, 'ubuntu')
+      if: runner.os == 'Linux'
       run: |
         echo "Need to install Qt..."
         sudo apt-get update
@@ -60,17 +65,12 @@ jobs:
     - name: Make
       working-directory: build
       run: ninja
-    - name: Rename
-      working-directory: build
-      if: startsWith(matrix.os, 'windows')
-      run: |
-        mv libtray.dll tray.dll
     - uses: actions/upload-artifact@v3
       name: Artifact
       with:
-        name: libtray-{{ matrix.os }}
+        name: libtray-${{ runner.os }}
         path: |
-          build/libtray.so
-          build/libtray.dylib
-          build/tray.dll
+          build/*.so
+          build/*.dylib
+          build/*.dll
         if-no-files-found: error
