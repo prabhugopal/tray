@@ -1,16 +1,16 @@
-![tray](https://raw.githubusercontent.com/StirlingLabs/tray/v23.08.3/tray.jpg)
+![tray](https://raw.githubusercontent.com/StirlingLabs/tray/v23.08.1/tray.jpg)
 # System Tray / Menu Bar / Indicator Icon
 
-Cross-platform, super tiny C99[^1] implementation of a system tray/menu bar icon with popup menu.
+Cross-platform, super tiny[^1] C99-based implementation of a system tray/menu bar icon with popup menu.
 
-[^1]: At least, it's super tiny and C99 on Mac & Windows.
+[^1]: It's super tiny on both Mac & Windows.
 
-The optional primary-click callback can hide/show a window while secondary-click shows a menu.  
-If no callback is specified, either click will show the menu.  The system can be dynamically 
-updated; icon, tooltip, menu items and status (checked/unchecked & enabled/disabled) can all be 
+The optional primary-click callback can hide/show a window while secondary-click shows a menu, or if  
+no callback is specified, either click will show the menu.  The system can be dynamically 
+updated; icon, tooltip, menu item text and status (checked/unchecked & enabled/disabled) can all be 
 both queried and changed at runtime. 
 
-Code is C++ friendly and will compile fine in C99 or C++98 and up on Windows or Mac but requires C++17 on Linux.
+Code is C++ friendly and will compile fine in C99 or C++98 and up on Windows, Objective-C on Mac but C++20 on Linux.
 
 Focussed PRs are welcome, especially improvements to the Linux implementation.  The goal is to 
 keep the code as simple as possible, so functionality beyond presenting a tray icon and menu is 
