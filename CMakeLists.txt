@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR) # target_link_directories
 
-project(tray C)
+project(tray LANGUAGES C CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -15,7 +15,7 @@ else()
 endif()
 
 # Sources for libtray
-list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray.h)
+#list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray.h)
 if(WIN32)
 	list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray_windows.c)
 else()
@@ -23,7 +23,10 @@ else()
 		if(APPLE)
 			list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray_darwin.m)
 		else()
-			list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray_linux.c)
+			list(APPEND SRCS
+					${CMAKE_CURRENT_SOURCE_DIR}/tray_linux.cpp
+					${CMAKE_CURRENT_SOURCE_DIR}/QtTrayMenu.cpp
+			)
 		endif()
 	endif()
 endif()
@@ -42,11 +45,13 @@ else()
 			target_link_libraries(tray PRIVATE ${COCOA})
 			target_compile_definitions(tray PRIVATE TRAY_APPKIT=1)
 		else()
-			find_package(APPINDICATOR REQUIRED)
-			target_compile_options(tray PRIVATE ${APPINDICATOR_CFLAGS})
-			target_link_directories(tray PRIVATE ${APPINDICATOR_LIBRARY_DIRS})
-			target_compile_definitions(tray PRIVATE TRAY_APPINDICATOR=1)
-			target_link_libraries(tray PRIVATE ${APPINDICATOR_LIBRARIES})
+			set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/QtTrayMenu.cpp PROPERTY LANGUAGE CXX)
+			set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/tray_linux.cpp PROPERTY LANGUAGE CXX)
+			find_package(Qt6 COMPONENTS Core Widgets Gui REQUIRED)
+			target_link_libraries(tray PRIVATE Qt6::Widgets Qt6::Core Qt6::Gui)
+			add_compile_options("-v")
+			set_target_properties(tray PROPERTIES LINKER_LANGUAGE CXX AUTOMOC ON)
+			target_compile_definitions(tray PRIVATE TRAY_QT6=1)
 		endif()
 	endif()
 endif()
@@ -61,6 +66,7 @@ ENDIF()
 # Tray Example
 add_executable(tray_example ${CMAKE_CURRENT_SOURCE_DIR}/example.c)
 target_link_libraries(tray_example PRIVATE tray)
+add_dependencies(tray_example tray) # Ensure that tray is built before tray_example
 
 if(WIN32)
 	configure_file(${CMAKE_CURRENT_LIST_DIR}/icon.ico ${CMAKE_BINARY_DIR}/icon.ico COPYONLY)

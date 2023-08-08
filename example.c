@@ -1,17 +1,22 @@
 #include <stdio.h>
 #include <string.h>
+#if defined(__clang__)
+#include <libc.h>
+#else
+#include <unistd.h>
+#endif
 
 #if defined (_WIN32) || defined (_WIN64)
 #define TRAY_WINAPI 1
 #elif defined (__linux__) || defined (linux) || defined (__linux)
-#define TRAY_APPINDICATOR 1
+#define TRAY_QT 1
 #elif defined (__APPLE__) || defined (__MACH__)
 #define TRAY_APPKIT 1
 #endif
 
 #include "tray.h"
 
-#if TRAY_APPINDICATOR
+#if TRAY_QT
 #define TRAY_ICON1 "icon-24px.png"
 #define TRAY_ICON2 "icon2-24px.png"
 #elif TRAY_APPKIT
@@ -23,20 +28,21 @@
 #endif
 
 void window_cb() {
-  printf("window cb\n");
+  printf("window cb: this is where you would make a window visible.\n");
 }
 
 void toggle_cb(struct tray_menu_item *item) {
   printf("toggle cb\n");
   item->checked = !item->checked;
-
-  tray_update(tray_get_instance());
+  struct tray* tray = tray_get_instance();
+  if (tray != NULL) tray_update(tray);
 }
 
 void hello_cb(struct tray_menu_item *item) {
   (void)item;
-  printf("hello cb\n");
+  printf("hello cb: changing icon\n");
   struct tray* tray = tray_get_instance();
+  if (tray == NULL) return;
   if (strcmp(tray->icon_filepath, TRAY_ICON1) == 0) {
     tray->icon_filepath = TRAY_ICON2;
   } else {
@@ -100,7 +106,9 @@ int main(int argc, char **argv) {
     printf("failed to create tray\n");
     return 1;
   }
-  while (tray_loop(1) == 0) {
+  int blocking = 0;
+  while (tray_loop(blocking) == 0) {
+    if (!blocking) usleep(100000);
     printf("iteration\n");
   }
   return 0;
