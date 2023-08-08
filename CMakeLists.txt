@@ -22,6 +22,7 @@ else()
 	if(UNIX)
 		if(APPLE)
 			list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/tray_darwin.m)
+			set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Build fat binary for macOS" FORCE)
 		else()
 			list(APPEND SRCS
 					${CMAKE_CURRENT_SOURCE_DIR}/tray_linux.cpp
