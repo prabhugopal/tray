@@ -1,4 +1,4 @@
-![tray](tray.jpg)
+![tray](https://raw.githubusercontent.com/StirlingLabs/tray/v23.08.3/tray.jpg)
 # System Tray / Menu Bar / Indicator Icon
 
 Cross-platform, super tiny C99[^1] implementation of a system tray/menu bar icon with popup menu.

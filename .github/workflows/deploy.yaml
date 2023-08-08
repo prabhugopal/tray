@@ -54,10 +54,10 @@ jobs:
         env:
           rawUrl: 'https://raw.githubusercontent.com/StirlingLabs/tray/master'
           readmeFilename: README.md
-          iconFilename: icon.png
+          iconFilename: SL.png
         run: |
           readme="README.md"
-          icon="icon.png"
+          icon="SL.png"
           wget --output-document $readme ${rawUrl}/${readmeFilename}
           wget --output-document $icon ${rawUrl}/${iconFilename}
           echo "readme=$readme" >> $GITHUB_OUTPUT
@@ -161,10 +161,10 @@ jobs:
           rawUrl: 'https://raw.githubusercontent.com/StirlingLabs/tray/master'
           readmeFilename: README.md
           iconFilename: SL.png
-          headerFilename: src/tray.h
+          headerFilename: tray.h
         run: |
           readme="README.md"
-          icon="icon.png"
+          icon="SL.png"
           header="tray.h"
           wget --output-document "$readme" "${rawUrl}/${readmeFilename}"
           wget --output-document "$icon" "${rawUrl}/${iconFilename}"
