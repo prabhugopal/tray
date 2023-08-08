@@ -1,16 +1,21 @@
 ![tray](tray.jpg)
 # System Tray / Menu Bar / Indicator Icon
 
-Cross-platform, super tiny C99 implementation of a system tray/menu bar icon with a popup menu and 
-optional primary-click callback. The callback allows primary-click to hide/show a window, for example,
-while secondary-click shows a menu.  If no callback is specified, either click will show the menu.
+Cross-platform, super tiny C99[^1] implementation of a system tray/menu bar icon with popup menu.
+
+The optional primary-click callback can hide/show a window while secondary-click shows a menu.  
+If no callback is specified, either click will show the menu.
 
 The system can be dynamically updated; icon, tooltip, menu items and status (checked/unchecked &
-enabled/disabled) can all be both queried and changed at runtime. Code is C++ friendly and will compile fine in C++98 and up.  This fork is intended to make the 
-functionality available as a library, for use from other languages.
+enabled/disabled) can all be both queried and changed at runtime. Code is C++ friendly and will 
+compile fine in C++98 and up on Windows or Mac but requires C++17 on Mac.  This fork is intended 
+to make the functionality available as a library, for use from other languages.
 
-Focussed PRs are welcome but please note that the goal is to keep the code as simple as possible.
-Functionality beyond presenting a tray icon and menu is out of scope.
+[^1]: At least it's super tiny and C99 on Mac & Windows.
+
+Focussed PRs are welcome, especially improvements to the Linux implementation.  The goal is to 
+keep the code as simple as possible, so functionality beyond presenting a tray icon and menu is 
+out of scope.
 
 ## Cross-platform
 
@@ -18,20 +23,17 @@ Works well on:
 
 * Windows XP or newer (shellapi.h)
 * MacOS (Cocoa/AppKit)
+* Linux/Gtk (Qt6)
 
-Known issues:
+Gnome has decided to deprecate the tray icon as a concept, except for system indicators. They have 
+not only deprecated the tray-handling code but removed it entirely.  Extensive investigation has
+failed to produce a reliable way to display tray icons, even using low-level X11 calls.  Qt _has_ 
+worked out a way to do it, so we are currently using their implementation on Linux, which 
+unfortunately requires C++ and much larger dependencies.  All of the Qt code is isolated in the
+library, so use of Qt is not required in application code (although it will use the application's 
+QApplication instance, should one exist).
 
-* Linux/Gtk (libappindicator)
-
-Gnome has decided to deprecate the tray icon as a concept, except for system indicators. This code 
-will still work if you have a system indicator installed, but often seems to require root privileges
-to render the icon.  It is possible to install a system indicator on Ubuntu 22.04, but without root 
-privileges, the icon will not render (it will just appear as "..." in the tray) although the menu
-will still work.  Furthermore, the AppIndicator library does not distinguish between left and right 
-click, so it's not possible to toggle window visibility in the same way as Windows or Mac.
-These are known issues and might be resolved by switching to a 
-[Qt-based implementation](https://doc.qt.io/qt-6/qsystemtrayicon.html) on Linux. PR's that accomplish 
-this are welcome.
+PRs that resolve this situation are very welcome!
 
 ## API
 
@@ -86,7 +88,7 @@ to theme changes and supply appropriate icons e.g. dark mode.
 
 * CMake
 * [Ninja](https://ninja-build.org/), in order to have the same build commands on all platforms
-* AppIndicator on Linux: `sudo apt install libappindicator3-dev`
+* Qt6 on Linux: `sudo apt install build-essential libgl1-mesa-dev qt6-base-dev`
 
 ## Building
 

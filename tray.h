@@ -14,9 +14,9 @@ extern "C"
 #endif
 #else
 #if __GNUC__ >= 4 || defined(__clang__)
-#define TRAY_EXPORT __attribute__((visibility("default")))
+#define TRAY_EXPORT extern __attribute__((visibility("default")))
 #else
-#define TRAY_EXPORT
+#define TRAY_EXPORT extern
 #endif
 #endif
 
