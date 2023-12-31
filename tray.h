@@ -10,7 +10,7 @@ struct tray_menu;
 
 struct tray {
   const char *icon;
-  char *tooltip;
+  const char *tooltip;
   struct tray_menu *menu;
 };
 
