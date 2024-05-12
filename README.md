@@ -1,5 +1,10 @@
-![tray](https://raw.githubusercontent.com/StirlingLabs/tray/v23.08.1/tray.jpg)
 # System Tray / Menu Bar / Indicator Icon
+
+![MacOS screenshot](./screenshot_macosx.png)
+
+![Windows screenshot](./screenshot_windows.png)
+
+![Linux screenshot](./screenshot_linux.png)
 
 Cross-platform, super tiny[^1] C99-based implementation of a system tray/menu bar icon with popup menu.
 
@@ -24,7 +29,7 @@ Works well on:
 * MacOS (Cocoa/AppKit)
 * Linux/Gtk (Qt6)
 
-Gnome has decided to deprecate the tray icon as a concept, except for system indicators. They have 
+GNOME has decided to deprecate the tray icon as a concept, except for system indicators. They have 
 not only deprecated the tray-handling code but removed it entirely.  Extensive investigation has
 failed to produce a reliable way to display tray icons, even using low-level X11 calls.  Qt _has_ 
 worked out a way to do it, so we are currently using their implementation on Linux, which 
@@ -106,24 +111,16 @@ Build & execute the `tray_example` application:
 ./tray_example
 ```
 
-## Screenshots
-
-![MacOS screenshot](./screenshot_macosx.png)
-
-![Windows screenshot](./screenshot_windows.png)
-
-![Linux screenshot](./screenshot_linux.png)
-
 ## History
 
-This fork is predominantly to make the functionality available as a library, for use from other languages.
+This fork brings together the [original work of Serge Zaitsev](https://github.com/zserge/tray) and
+the most interesting forks and PRs of respectable contributors including:
 
-It based on a previous [fork by dmikushin](https://github.com/dmikushin/tray) that brings together the
-[original work of Serge Zaitsev](https://github.com/zserge/tray) and "the most interesting forks and PRs of
-respectable contributors" including:
-
+* Numerous enhancements from [StirlingLabs](https://github.com/StirlingLabs/tray) to make the functionality
+ available as a library, for use from other languages.
 * [Only process messages coming from the tray window on Windows](https://github.com/zserge/tray/pull/18)
 * [Become C++-friendly](https://github.com/zserge/tray/pull/16)
 * [Fix all menu items have a check box](https://github.com/zserge/tray/pull/11)
 * [Add support for tooltip](https://github.com/zserge/tray/pull/11)
 * Darwin implementation translated from C to Objective C adapted from [@trevex fork](https://github.com/trevex/tray)
+
