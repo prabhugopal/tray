@@ -22,7 +22,7 @@ extern "C"
 
 struct tray {
   const char *icon_filepath;
-  char *tooltip;
+  const char *tooltip;
   void (*cb)(struct tray *); // called on left click, leave null to just open menu
   struct tray_menu_item *menu;
 };
