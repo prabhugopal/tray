@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#if WIN32
+#ifdef _WIN32
 #ifdef TRAY_EXPORTS
 #define TRAY_EXPORT __declspec(dllexport)
 #else
