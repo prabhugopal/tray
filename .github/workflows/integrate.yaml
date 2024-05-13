@@ -34,23 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: Install Ninja
-      run: |
-        case ${{ runner.os }} in
-          Linux)   ninja_os=linux ;;
-          macOS)   ninja_os=mac ;;
-          Windows) ninja_os=win ;;
-        esac
-        url="https://github.com/ninja-build/ninja/releases/latest/download/ninja-$ninja_os.zip"
-        curl -L -o ninja-$ninja_os.zip $url
-        if [[ ${{ runner.os }} == 'Windows' ]]; then
-          unzip ninja-$ninja_os.zip -d .
-          export PATH=$PATH:"$(pwd -W)"
-        else
-          sudo unzip ninja-$ninja_os.zip -d /usr/local/bin/
-        fi
-        
-        ninja --version
+    - uses: seanmiddleditch/gha-setup-ninja@master
     - name: Install Dependencies
       if: runner.os == 'Linux'
       run: |
