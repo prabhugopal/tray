@@ -35,3 +35,7 @@
 # Binary
 example
 example.exe
+
+.vscode/
+build/
+cmake-*
